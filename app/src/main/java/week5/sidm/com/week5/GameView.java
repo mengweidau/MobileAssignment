@@ -10,7 +10,6 @@ public class GameView extends SurfaceView
 {
     //Context context = null;
 
-    //TODO: UpdateThread
     //Will wrtie this later
     private SurfaceHolder holder = null;
     private UpdateThread updateThread = new UpdateThread(this);
@@ -25,7 +24,6 @@ public class GameView extends SurfaceView
             holder.addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(SurfaceHolder holder) {
-                    //TODO: Uncomment this once Update thread is done
 
                     if (!updateThread.isRunning())
                         updateThread.Initialized();
@@ -45,7 +43,6 @@ public class GameView extends SurfaceView
 
                 @Override
                 public void surfaceDestroyed(SurfaceHolder holder) {
-                    //TODO: Same for update Thread is Done
                     updateThread.Terminate();
                 }
             });

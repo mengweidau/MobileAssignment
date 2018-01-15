@@ -1,99 +1,93 @@
 package week5.sidm.com.week5;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.view.SurfaceView;
 import android.util.DisplayMetrics;
 
-public class sampleBackground implements EntityBase{
+public class SampleBackground implements EntityBase
+{
     private Bitmap bmp = null;
-    private int renderLayer;
+    private boolean isDone = false;
+    private float xPos, yPos, offset;
 
-    private boolean isDone =false;
+    //TODO: background week 9 - part 1
+    // Week 9
+    //Typeface myfont;
 
-    private SurfaceView view = null;
-
-    private float offset, offset2 = 0.0f;
-    private float xPos = 0.0f;
-    private float yPos =0.0f;
+    // New items!! Week 9 for screen resizing
+    int ScreenWidth, ScreenHeight;
+    private Bitmap scaledbmp = null;
 
     @Override
-    public boolean IsDone()
-    {
+    public boolean IsDone() {
         return isDone;
     }
 
     @Override
-    public void SetIsDone(boolean _isDone)
-    {
+    public void SetIsDone(boolean _isDone) {
         isDone = _isDone;
     }
 
     @Override
-    public void Init (SurfaceView _view)
-    {
-        bmp = BitmapFactory.decodeResource(_view.getResources(), R.drawable.backgroundgame);
-        view = _view;
-        offset = 0.0f;
+    public void Init(SurfaceView _view) {
 
+        bmp = ResourceManager.Instance.GetBitmap(R.drawable.backgroundgame);
+
+        // Retrieve information of your surfaceview or any device size view
         DisplayMetrics metrics = _view.getResources().getDisplayMetrics();
-        
+        ScreenWidth = metrics.widthPixels;
+        ScreenHeight = metrics.heightPixels;
+
+        scaledbmp = Bitmap.createScaledBitmap(bmp,ScreenWidth,ScreenHeight, true);
+
+        //TODO: background week 9 - part 2
+        // Week 9
+        //myfont = Typeface.createFromAsset(_view.getContext().getAssets(), "fonts/Gemcut.otf");
+
     }
 
     @Override
-    public void Update(float _dt)
-    {
-        //xPos -= _dt * 500;
-        //if (xPos < - view.getWidth()) {
-          //  xPos = 0;
-        //}
+    public void Update(float _dt) {
+        if (GameSystem.Instance.GetIsPaused())
+            return;
 
-        offset -= _dt * 0.1f;
-        if (offset < -0.5)
-        {
-            offset = 0;
-        }
-        offset2 -= _dt * 0.1f;
-        if (offset2 < -0.5)
-        {
-            offset2 = 0;
+        offset += _dt * 0.1f;
+
+        // Week 9
+        xPos -= _dt * 500;
+
+        if (xPos < - ScreenWidth){
+            xPos = 0;
         }
     }
 
     @Override
-    public void Render(Canvas _canvas)
-    {
-        xPos = 0.5f * view.getWidth();
-        yPos = 0.5f * view.getHeight();
+    public void Render(Canvas _canvas) {
 
-        //float xoffSet = (float) Math.sin(offset) * bmp.getWidth() * 0.3f;
-        //float scaleFactor = 0.5f + Math.abs((float)Math.sin())
+       /* float xOffset = (float) Math.sin(offset) * bmp.getWidth() * 0.3f;
+        //xPos += xOffset;
+        _canvas.drawBitmap(bmp, xPos - bmp.getWidth() * 0.5f + xOffset, yPos - bmp.getHeight() * 0.5f, null);*
 
-        //transform.postTranslate(xPos,yPos);
-        float xoffSet = (float) offset * bmp.getWidth();
-        float xoffSet2 = (float) offset2 * bmp.getWidth();
-
+        /*
         Matrix transform = new Matrix();
-        transform.postScale(0.75f,0.75f);
-        transform.postTranslate(xPos + xoffSet, yPos -700);
+        transform.postTranslate(-bmp.getWidth()*0.5f, -bmp.getHeight()*0.5f);
+        transform.postScale((float)view.getWidth()/(float)bmp.getWidth(), (float)view.getHeight()/(float)bmp.getHeight());
+        //transform.postRotate((float)Math.toDegrees(lifeTime));
+        transform.postTranslate(xPos, yPos);
+        _canvas.drawBitmap(bmp, transform, null);
+        */
 
-        Matrix transform2 = new Matrix();
-        transform2.postScale(0.75f,0.75f);
-        transform2.postTranslate(xPos + xoffSet2 - 4010, yPos -700);
+        // Week 9
+        _canvas.drawBitmap(scaledbmp,xPos, yPos, null);
+        _canvas.drawBitmap(scaledbmp, xPos + ScreenWidth, yPos, null);
 
-        _canvas.drawBitmap(bmp,transform,null);
-        _canvas.drawBitmap(bmp,transform2,null);
-        //_canvas.drawBitmap(bmp, xPos + bmp.getWidth() * 0.005f + xoffSet, yPos - bmp.getHeight() * 0.0005f,null);
-        //_canvas.drawBitmap(bmp, xPos - bmp.getWidth() * 0.005f + xoffSet + 1000, yPos- bmp.getHeight() * 0.0005f , null);
-        //_canvas.drawBitmap(bmp,xPos + bmp.getWidth() + xoffSet, bmp.getHeight(), null);
-        //_canvas.drawBitmap(bmp, xPos - bmp.getWidth() * 0.5f + xoffSet, yPos - bmp.getHeight() * 0.05f, null);
+
     }
 
     @Override
     public boolean IsInit() {
-        return false;
+        return bmp != null;
     }
 
     @Override
@@ -102,16 +96,15 @@ public class sampleBackground implements EntityBase{
     }
 
     @Override
-    public void SetRenderLayer(int layer) {
+    public void SetRenderLayer(int _newLayer) {
         return;
     }
 
-    public static sampleBackground Create()
+    public static SampleBackground Create()
     {
-        sampleBackground result = new sampleBackground();
+        SampleBackground result = new SampleBackground();
         EntityManager.Instance.AddEntity(result);
         return result;
     }
-
 }
 

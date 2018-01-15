@@ -1,9 +1,7 @@
 package week5.sidm.com.week5;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -16,15 +14,14 @@ public class TrashEntity implements EntityBase, Collidable
 {
     private Bitmap bmp = null;
     private boolean isDone = false;
-    private float xPos, yPos, xDir, yDir, lifeTime;
-    private int renderLayer;
+    private float xPos, yPos, xDir, yDir;
     private Vibrator _vibrator;
+    private boolean isInit = false;
 
 
-    private SurfaceView view = null;
-    private float offset = 0.0f;
+    //private SurfaceView view = null;
+    //private float offset = 0.0f;
 
-    int health = 100;
     boolean recyclable;
 
     @Override
@@ -39,30 +36,28 @@ public class TrashEntity implements EntityBase, Collidable
 
     @Override
     public void Init(SurfaceView _view) {
+        //random between type: recyclable and non-recyclable
         if (Math.random() < 0.5f)
             recyclable = true;
         else
             recyclable = false;
 
+        //assigned the bmp according to it's type
         if (recyclable)
-            bmp = BitmapFactory.decodeResource(_view.getResources(), R.drawable.recyclebag);
+            bmp = ResourceManager.Instance.GetBitmap(R.drawable.recyclebag);
         else
-            bmp = BitmapFactory.decodeResource(_view.getResources(), R.drawable.trashbag);
+            bmp = ResourceManager.Instance.GetBitmap(R.drawable.trashbag);
 
-        //lifeTime = 5.0f;
-
-        Random ranGen = new Random();
 
         xPos = _view.getWidth() + 50.0f;
         yPos = _view.getHeight() - 120.0f;
 
         xDir = 1.0f;
         yDir = 1.0f;
-        //offset = 0.0f;
 
-        //rand between 0 - 1
-        //if rand == 1//recyclable = true
         _vibrator = (Vibrator)_view.getContext().getSystemService(_view.getContext().VIBRATOR_SERVICE);
+
+        isInit = true;
     }
 
     public void StartVibrate()
@@ -84,11 +79,8 @@ public class TrashEntity implements EntityBase, Collidable
 
     @Override
     public void Update(float _dt) {
-        // lifeTime -= _dt;
-        //if(lifeTime <= 0.0f)
-        //{
-        // SetIsDone(true);
-        //}
+        if (GameSystem.Instance.GetIsPaused())
+            return;
 
         Random ranGen = new Random();
         xPos -= xDir * ranGen.nextFloat() * 30.0f - 15.0f * _dt;
@@ -98,23 +90,6 @@ public class TrashEntity implements EntityBase, Collidable
         {
             SetIsDone(true);
         }
-
-       // offset -= _dt * 0.1f;
-       // if (offset < 0)
-       // {
-       //     SetIsDone(true);
-       // }
-       // if(TouchManager.Instance.isDown())
-       // {
-            //Check Collision Here!!!!
-          //  float imgRadius = bmp.getHeight() * 0.5f;
-
-            //if(Collision.SphereToSphere(TouchManager.Instance.GetPosX(),
-                  //  TouchManager.Instance.GetPosY(),0.0f,xPos,yPos,imgRadius))
-           // {
-                //SetIsDone(true);
-           // }
-       // }
 
     }
 
@@ -138,7 +113,7 @@ public class TrashEntity implements EntityBase, Collidable
 
     @Override
     public boolean IsInit() {
-        return false;
+        return isInit;
     }
 
     @Override

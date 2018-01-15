@@ -1,13 +1,10 @@
 package week5.sidm.com.week5;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.SurfaceView;
-
-import java.util.Random;
 
 public class Player implements EntityBase, Collidable
 {
@@ -15,12 +12,13 @@ public class Player implements EntityBase, Collidable
     private boolean isDone = false;
     private float xPos, yPos, yDir;
     private float originYPos;
+    boolean isInit = false;
 
     float maxJumpHeight;
 
-    int health; //declare health
+    int health;
     int points;
-    boolean isJumping, canJump, isFalling;
+    boolean isJumping, isFalling;
 
     @Override
     public boolean IsDone() {
@@ -34,7 +32,7 @@ public class Player implements EntityBase, Collidable
 
     @Override
     public void Init(SurfaceView _view) {
-        bmp = BitmapFactory.decodeResource(_view.getResources(), R.drawable.playerrun);
+        bmp = ResourceManager.Instance.GetBitmap(R.drawable.playerrun);;
 
         health = 5; //initialise health to 5
         points = 0;
@@ -43,17 +41,20 @@ public class Player implements EntityBase, Collidable
         //Random ranGen = new Random();
 
         //initialise the player position
-        xPos = 150;
-        originYPos = yPos = _view.getHeight() + 800.0f;
+        xPos = 150.0f;
+        originYPos = yPos = _view.getHeight() - 150.0f;
 
-        maxJumpHeight = yPos - 300;
+        maxJumpHeight = yPos - 400;
         //xDir = 1.0f;
         yDir = 1.0f; // yDir is positive, meaning he will move up
-
+        isInit = true;
     }
 
     @Override
     public void Update(float _dt) {
+        if (GameSystem.Instance.GetIsPaused())
+            return;
+
         if(health <= 0) //when player health reaches 0 , he dies OR GAME OVER
         {
             //TODO: go to game over screen
@@ -62,7 +63,7 @@ public class Player implements EntityBase, Collidable
 
         if (isJumping) //is jumping
         {
-            yPos -= yDir * _dt * 400; //move up
+            yPos -= yDir * _dt * 450; //move up
         }
         if (yPos < maxJumpHeight) //if position reaches max jump height
         {
@@ -120,7 +121,7 @@ public class Player implements EntityBase, Collidable
 
     @Override
     public boolean IsInit() {
-        return false;
+        return isInit;
     }
 
     @Override

@@ -2,7 +2,6 @@ package week5.sidm.com.week5;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.provider.MediaStore;
 import android.view.SurfaceHolder;
 
 public class UpdateThread extends Thread {
@@ -17,8 +16,11 @@ public class UpdateThread extends Thread {
         view = _view;
         holder = _view.getHolder();
 
+        ResourceManager.Instance.Init(_view);
         AudioManager.Instance.Init(_view);
-        EasyGame.Instance.Init(view);
+        StateManager.Instance.Init(_view);
+        EntityManager.Instance.Init(_view);
+        GameSystem.Instance.Init(_view);
     }
 
     //if(<New Codes> && isRunning) << ====== this is variable
@@ -49,6 +51,9 @@ public class UpdateThread extends Thread {
 
         long prevTime = System.nanoTime();
 
+        //will always start with the state named "Default"
+        StateManager.Instance.Start("Default");
+
         while(isRunning())
         {
             startTime = System.currentTimeMillis();
@@ -57,8 +62,9 @@ public class UpdateThread extends Thread {
             long currTime = System.nanoTime();
             float deltaTime = (float)((currTime - prevTime)/ 1000000000.0f);
             prevTime = currTime;
-            EasyGame.Instance.Update(deltaTime);
-            EntityManager.Instance.Update(deltaTime);
+
+            //Update game
+            StateManager.Instance.Update(deltaTime);
 
             //Render////////////////////////////////////
             Canvas canvas = holder.lockCanvas();
@@ -70,7 +76,7 @@ public class UpdateThread extends Thread {
                     //Start doing our stuff here!!!
                     canvas.drawColor(Color.BLACK);
 
-                    EasyGame.Instance.Render(canvas);
+                    StateManager.Instance.Render(canvas);
 
                 }
                 holder.unlockCanvasAndPost(canvas);

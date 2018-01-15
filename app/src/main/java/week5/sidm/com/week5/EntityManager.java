@@ -13,7 +13,7 @@ public class EntityManager
     public final static EntityManager Instance = new EntityManager();
     private LinkedList<EntityBase> entityList = new LinkedList<EntityBase>();
     private SurfaceView view = null;
-    //Need to store Entities : TODO
+
     public void UpdatePauseButton(float _dt)
     {
         for (EntityBase currEntity : entityList)
@@ -38,9 +38,12 @@ public class EntityManager
     public void Update(float _dt)
     {
         LinkedList<EntityBase> removalList = new LinkedList<EntityBase>();
-        // TODO
+
         for (EntityBase currEntity: entityList)
         {
+            if (!currEntity.IsInit())
+                currEntity.Init(view);
+
             currEntity.Update(_dt);
 
             //check if it is done
